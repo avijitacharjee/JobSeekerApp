@@ -38,13 +38,13 @@ import retrofit2.Callback;
 
 public class SelectCategoryActivity extends AppCompatActivity {
 
-    int[] images = {1,2,3};
-    String[] texts ={};
-    CategoryListAdapter adapter;
-    ListView listView;
-    List<String> s = new ArrayList<>();
-    TextView hiddenTextView;
-    static int[] categoryId;
+    private int[] images = {1,2,3};
+    private String[] texts ={};
+    private CategoryListAdapter adapter;
+    private ListView listView;
+    private List<String> s = new ArrayList<>();
+    private TextView hiddenTextView;
+    private static int[] categoryId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

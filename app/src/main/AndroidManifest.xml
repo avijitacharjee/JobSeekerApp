@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".SelectCategoryActivity" />
-        <activity android:name=".SubCategoryActivity"></activity>
+        <activity android:name=".SubCategoryActivity" />
+        <activity android:name=".QuizActivity"></activity>
     </application>
 
 </manifest>
