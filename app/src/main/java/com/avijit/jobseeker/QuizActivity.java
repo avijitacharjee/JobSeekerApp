@@ -1,11 +1,14 @@
 package com.avijit.jobseeker;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,6 +20,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.avijit.jobseeker.Models.Question;
 import com.avijit.jobseeker.adapters.CategoryListAdapter;
 import com.avijit.jobseeker.adapters.QuizListAdapater;
 import com.avijit.jobseeker.adapters.SubCategoryListAdapter;
@@ -32,6 +36,7 @@ import java.util.Map;
 
 public class QuizActivity extends AppCompatActivity {
 
+    AlertDialog alertDialog=null;
     private Handler mainHandler = new Handler();
 
     private TextView questionTextView;
@@ -44,6 +49,9 @@ public class QuizActivity extends AppCompatActivity {
     private String answer;
     CountDownTimer countDownTimer;
     static int TIME_IN_MILLIS=1000;
+    public static List<Question> questions ;
+    private Button nextQuiz;
+    private int questionIndex=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +60,79 @@ public class QuizActivity extends AppCompatActivity {
 
 
         questionTextView= findViewById(R.id.question_text_view);
-        questionTextView.setText("lakjsdflkjasdflkjasdfkdkfkjfjfjfjf");
+        nextQuiz = findViewById(R.id.quiz_next_button);
+        questionTextView.setText("Loading");
 
         listView = findViewById(R.id.option_list_view);
-
-
         subCategoryId = getIntent().getExtras().getInt("subCategoryId");
-        setOptionTexts();//It also initialises the jsonObject
+        questions= new ArrayList<>();
+        setQuestion();//It also initialises the jsonObject
+
+        nextQuiz.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if(questionIndex<questions.size())
+                {
+                    Question question = questions.get(questionIndex++);
+                    changeQuestion(question);
+                }
+                else
+                {
+                    Toast.makeText(QuizActivity.this, "No more Questions", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(QuizActivity.this, position+"", Toast.LENGTH_SHORT).show();
+                Question question = questions.get(questionIndex-1);
+                int answer=0;
+                if(question.getAnswer().equals("a"))
+                {
+                    answer=0;
+                }
+                else if(question.getAnswer().equals("b"))
+                {
+                    answer=1;
+                }
+                else if(question.getAnswer().equals("c"))
+                {
+                    answer=2;
+                }
+                else if(question.getAnswer().equals("d"))
+                {
+                    answer=3;
+                }
+                if(questionIndex<questions.size())
+                {
+                    if(answer==position)
+                    {
+                        Toast.makeText(QuizActivity.this, "Correct Answer", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(QuizActivity.this,"Wrong Answer",Toast.LENGTH_SHORT).show();
+                    }
+                    changeQuestion(question);
+                    questionIndex++;
+                }
+                else
+                {
+                    if(answer==position)
+                    {
+                        Toast.makeText(QuizActivity.this, "Correct Answer", Toast.LENGTH_SHORT).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(QuizActivity.this,"Wrong Answer",Toast.LENGTH_SHORT).show();
+                    }
+                    Toast.makeText(QuizActivity.this,"No more questions",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
        /* try {
             JSONArray data = jsonObject.getJSONArray("data");
             int length= data.length();
@@ -81,7 +155,35 @@ public class QuizActivity extends AppCompatActivity {
 
 */
     }
-    public void setOptionTexts()
+
+    @Override
+    protected void onPause() {
+        open();
+        super.onPause();
+    }
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+
+    }
+
+    @Override
+    protected void onResume() {
+        if (alertDialog!=null && alertDialog.isShowing()){
+            alertDialog.dismiss();
+        }
+        super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        if (alertDialog!=null && alertDialog.isShowing()){
+            alertDialog.dismiss();
+        }
+        super.onStop();
+    }
+
+    public void setQuestion()
     {
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         String url ="https://androstar.tk/jobseeker/api-v2.php/";
@@ -97,28 +199,26 @@ public class QuizActivity extends AppCompatActivity {
                             JSONArray data = jsonObject.getJSONArray("data");
                             int length= data.length();
                             JSONObject questionsJsonObj=null;
-                            {
-                                questionsJsonObj = data.getJSONObject(0);
-                                changeQuestion(questionsJsonObj);
-                            }
-                            for(int i=1;i<length;i++)
+
+                            for(int i=0;i<length;i++)
                             {
                                 questionsJsonObj = data.getJSONObject(i);
-                                //timer1(questionsJsonObj);
-                                try {
-                                    Thread.sleep(1000);
-                                } catch (InterruptedException e) {
-
-                                }
-                                changeQuestion(questionsJsonObj);
+                                questions.add(new Question(
+                                        questionsJsonObj.getString("question"),
+                                        questionsJsonObj.getString("optiona"),
+                                        questionsJsonObj.getString("optionb"),
+                                        questionsJsonObj.getString("optionc"),
+                                        questionsJsonObj.getString("optiond"),
+                                        questionsJsonObj.getString("answer")
+                                ));
+                            }
+                            if(questions.size()>0)
+                            {
+                                changeQuestion(questions.get(0));
+                                questionIndex++;
                             }
 
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                }
-                            });
                             /*JSONArray data = jsonObject.getJSONArray("data");
                             int length = data.length();
                             for(int i=0;i<length;i++)
@@ -173,31 +273,14 @@ public class QuizActivity extends AppCompatActivity {
             }
         };
 
-// Add the request to the RequestQueue.
+        // Add the request to the RequestQueue.
         //getApplicationContext().addToRequestQueue(jsonObjectRequest, "headerRequest");
         queue.add(stringRequest);
     }
-    public void changeQuestion(JSONObject questionJSONObject)
+    public void changeQuestion(Question question)
     {
-        mainHandler.post(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-        try
-        {
-            question=questionJSONObject.getString("question");
-            questionTextView.setText(question);
-            options[0]=questionJSONObject.getString("optiona");
-            options[1]=questionJSONObject.getString("optionb");
-            options[2]=questionJSONObject.getString("optionc");
-            options[3]=questionJSONObject.getString("optiond");
-            answer = questionJSONObject.getString("answer");
-            Toast.makeText(getApplicationContext(),questionJSONObject.getString("id"),Toast.LENGTH_LONG).show();
-        } catch (JSONException e) {
-            questionTextView.setText("Error");
-        }
+        questionTextView.setText(question.getQuestion());
+        String[] options={question.getOption1(),question.getOption2(),question.getOption3(),question.getOption4()};
         adapter = new QuizListAdapater(getApplicationContext(),options);
         listView.setAdapter(adapter);
 
@@ -209,20 +292,28 @@ public class QuizActivity extends AppCompatActivity {
             public void onTick(long millisUntilFinished) {
 
             }
-
             @Override
             public void onFinish() {
-                changeQuestion(questionJSONObject);
+
             }
         }.start();
     }
-    public void timer1(JSONObject questionJSONObject)
-    {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
+    public void open(){
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setMessage("Quiz stopped due to your inactivity");
+        alertDialogBuilder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        if (alertDialog!=null && alertDialog.isShowing()){
+                            alertDialog.dismiss();
+                        }
+                        finish();
+                    }
+                });
 
-        }
-        changeQuestion(questionJSONObject);
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+
     }
 }

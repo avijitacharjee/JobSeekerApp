@@ -1,13 +1,17 @@
 package com.avijit.jobseeker;
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -45,24 +49,30 @@ public class SelectCategoryActivity extends AppCompatActivity {
     private List<String> s = new ArrayList<>();
     private TextView hiddenTextView;
     private static int[] categoryId;
+    private VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_category);
+        setContentView(R.layout.loader);
+        videoView = findViewById(R.id.loaderVideoView);
+        MediaController mediaController = new MediaController(this);
+        mediaController.setAnchorView(videoView);
 
-        listView = findViewById(R.id.category_list_view);
-        texts = getCategoryNames();
+        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.loader);
+        videoView.setMediaController(mediaController);
+        videoView.setVideoURI(uri);
+        videoView.requestFocus();
+        videoView.start();
+        videoView.setOnCompletionListener ( new MediaPlayer.OnCompletionListener() {
 
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),SubCategoryActivity.class);
-                intent.putExtra("position",categoryId[position]);
-                startActivity(intent);
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                videoView.start();
             }
         });
+
+        getCategoryNames();
 
     }
     public String[] getCategoryNames()
@@ -85,6 +95,17 @@ public class SelectCategoryActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        videoView.stopPlayback();
+                        setContentView(R.layout.activity_select_category);
+                        listView = findViewById(R.id.category_list_view);
+                        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                Intent intent = new Intent(getApplicationContext(),SubCategoryActivity.class);
+                                intent.putExtra("position",categoryId[position]);
+                                startActivity(intent);
+                            }
+                        });
                       /*  textView.setText("Worked"+response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);
@@ -135,7 +156,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
             /* passing request body */
             protected Map<String,String> getParams()
             {
-                Map<String,String> params = new HashMap<String, String>() ;
+                Map<String,String> params = new HashMap<String,String>() ;
                 params.put("access_key","6808");
                 params.put("get_categories","1");
 
@@ -147,7 +168,6 @@ public class SelectCategoryActivity extends AppCompatActivity {
                 HashMap headers = new HashMap();
                 headers.put("Content-Type", "application/json");
                 headers.put("Content-Type", "application/x-www-form-urlencoded");
-
                 return headers;
             }
         };

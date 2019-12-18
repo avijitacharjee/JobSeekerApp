@@ -1,12 +1,16 @@
 package com.avijit.jobseeker;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.MediaController;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -33,36 +37,34 @@ public class SubCategoryActivity extends AppCompatActivity {
     int categoryId;
     int[] images;
     static int[] subCategoryIds;
+    VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sub_category);
+        setContentView(R.layout.loader);
+        videoView = findViewById(R.id.loaderVideoView);
+        MediaController mediaController = new MediaController(this);
+        mediaController.setAnchorView(videoView);
 
-        listView = findViewById(R.id.sub_category_list_view);
-        categoryId = getIntent().getExtras().getInt("position");
-        setListView();
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            /**
-             * Callback method to be invoked when an item in this AdapterView has
-             * been clicked.
-             * <p>
-             * Implementers can call getItemAtPosition(position) if they need
-             * to access the data associated with the selected item.
-             *
-             * @param parent   The AdapterView where the click happened.
-             * @param view     The view within the AdapterView that was clicked (this
-             *                 will be a view provided by the adapter)
-             * @param position The position of the view in the adapter.
-             * @param id       The row id of the item that was clicked.
-             */
+        Uri uri = Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.loader);
+        videoView.setMediaController(mediaController);
+        videoView.setVideoURI(uri);
+        videoView.requestFocus();
+        videoView.start();
+        videoView.setOnCompletionListener ( new MediaPlayer.OnCompletionListener() {
+
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getApplicationContext(),QuizActivity.class);
-                intent.putExtra("subCategoryId",subCategoryIds[position]);
-                startActivity(intent);
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                videoView.start();
             }
         });
+        categoryId = getIntent().getExtras().getInt("position");
+        setListView();
+
+
+
+
 
     }
     public void setListView ()
@@ -84,6 +86,8 @@ public class SubCategoryActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         try {
+                            setContentView(R.layout.activity_sub_category);
+                            listView = findViewById(R.id.sub_category_list_view);
                             List<String> s = new ArrayList<>();
                             List<Integer> ids= new ArrayList<>();
                             JSONObject jsonObject = new JSONObject(response);
@@ -105,6 +109,27 @@ public class SubCategoryActivity extends AppCompatActivity {
                             SubCategoryActivity.subCategoryIds=idArr;
                             adapter = new SubCategoryListAdapter(getApplicationContext(),texts,images);
                             listView.setAdapter(adapter);
+                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                /**
+                                 * Callback method to be invoked when an item in this AdapterView has
+                                 * been clicked.
+                                 * <p>
+                                 * Implementers can call getItemAtPosition(position) if they need
+                                 * to access the data associated with the selected item.
+                                 *
+                                 * @param parent   The AdapterView where the click happened.
+                                 * @param view     The view within the AdapterView that was clicked (this
+                                 *                 will be a view provided by the adapter)
+                                 * @param position The position of the view in the adapter.
+                                 * @param id       The row id of the item that was clicked.
+                                 */
+                                @Override
+                                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    Intent intent = new Intent(getApplicationContext(),QuizActivity.class);
+                                    intent.putExtra("subCategoryId",subCategoryIds[position]);
+                                    startActivity(intent);
+                                }
+                            });
 
                         }catch (JSONException e)
                         {
@@ -136,7 +161,6 @@ public class SubCategoryActivity extends AppCompatActivity {
                 HashMap headers = new HashMap();
                 headers.put("Content-Type", "application/json");
                 headers.put("Content-Type", "application/x-www-form-urlencoded");
-
                 return headers;
             }
         };
