@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 public class StartActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private Button startButton;
+    private Button startButton,signUpButton,loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,24 @@ public class StartActivity extends AppCompatActivity
             }
         };
         startButton.setOnClickListener(startButtonListener);
+
+        signUpButton = findViewById(R.id.signup_button);
+        View.OnClickListener signUpButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),SignUpActivity.class));
+            }
+        };
+        signUpButton.setOnClickListener(signUpButtonListener);
+
+        loginButton = findViewById(R.id.login_button);
+        View.OnClickListener loginButtonListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+            }
+        };
+        loginButton.setOnClickListener(loginButtonListener);
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.avijit.jobseeker;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +53,9 @@ public class QuizActivity extends AppCompatActivity {
     static int TIME_IN_MILLIS=1000;
     public static List<Question> questions ;
     private Button nextQuiz;
-    private int questionIndex=0;
+    private int questionIndex=1;
+    private int correctlyAnswered=0;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,24 @@ public class QuizActivity extends AppCompatActivity {
         subCategoryId = getIntent().getExtras().getInt("subCategoryId");
         questions= new ArrayList<>();
         setQuestion();//It also initialises the jsonObject
+        intent = new Intent(getApplicationContext(),ResultActivity.class);
+
+        countDownTimer = new CountDownTimer(4000,500) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+
+            }
+
+            @Override
+            public void onFinish() {
+                if(questionIndex<questions.size())
+                {
+                    Question question = questions.get(questionIndex++);
+                    changeQuestion(question);
+                    countDownTimer.start();
+                }
+            }
+        };
 
         nextQuiz.setOnClickListener(new View.OnClickListener() {
 
@@ -74,48 +96,56 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(questionIndex<questions.size())
                 {
+                    countDownTimer.start();
                     Question question = questions.get(questionIndex++);
                     changeQuestion(question);
                 }
                 else
                 {
+                    intent.putExtra("correctlyAnswered",correctlyAnswered);
+                    intent.putExtra("totalQuestions",questions.size());
                     Toast.makeText(QuizActivity.this, "No more Questions", Toast.LENGTH_SHORT).show();
+                    startActivity(intent);
                 }
             }
         });
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                countDownTimer.cancel();
+                countDownTimer.start();
                 Toast.makeText(QuizActivity.this, position+"", Toast.LENGTH_SHORT).show();
-                Question question = questions.get(questionIndex-1);
+                final Question question = questions.get(questionIndex-1);
+
                 int answer=0;
-                if(question.getAnswer().equals("a"))
-                {
-                    answer=0;
-                }
-                else if(question.getAnswer().equals("b"))
-                {
-                    answer=1;
-                }
-                else if(question.getAnswer().equals("c"))
-                {
-                    answer=2;
-                }
-                else if(question.getAnswer().equals("d"))
-                {
-                    answer=3;
-                }
+                answer = question.getAnswerIndex(question);
+                View selectedListItemView = listView.getChildAt(position);
+                View answerListItemView = listView.getChildAt(answer);
                 if(questionIndex<questions.size())
                 {
                     if(answer==position)
                     {
                         Toast.makeText(QuizActivity.this, "Correct Answer", Toast.LENGTH_SHORT).show();
+                        selectedListItemView.setBackgroundColor(Color.GREEN);
+                        selectedListItemView.findViewById(R.id.option_text).setBackgroundColor(Color.GREEN);
+                        correctlyAnswered++;
                     }
                     else
                     {
+                        selectedListItemView.setBackgroundColor(Color.RED);
+                        selectedListItemView.findViewById(R.id.option_text).setBackgroundColor(Color.RED);
+                        answerListItemView.setBackgroundColor(Color.GREEN);
+                        answerListItemView.findViewById(R.id.option_text).setBackgroundColor(Color.GREEN);
                         Toast.makeText(QuizActivity.this,"Wrong Answer",Toast.LENGTH_SHORT).show();
                     }
-                    changeQuestion(question);
+                    mainHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(QuizActivity.this, "Handler", Toast.LENGTH_SHORT).show();
+                            changeQuestion(question);
+                        }
+                    }, 800);
+
                     questionIndex++;
                 }
                 else
@@ -129,31 +159,14 @@ public class QuizActivity extends AppCompatActivity {
                         Toast.makeText(QuizActivity.this,"Wrong Answer",Toast.LENGTH_SHORT).show();
                     }
                     Toast.makeText(QuizActivity.this,"No more questions",Toast.LENGTH_SHORT).show();
+                    intent.putExtra("correctlyAnswered",correctlyAnswered);
+                    intent.putExtra("totalQuestions",questions.size());
+                    startActivity(intent);
                 }
             }
         });
 
-       /* try {
-            JSONArray data = jsonObject.getJSONArray("data");
-            int length= data.length();
-            for(int i=0;i<length;i++)
-            {
-                JSONObject questionsJsonObj = data.getJSONObject(i);
-                question=questionsJsonObj.getString("question");
-                questionTextView.setText(question);
-                options[0]=questionsJsonObj.getString("optiona");
-                options[1]=questionsJsonObj.getString("optionb");
-                options[2]=questionsJsonObj.getString("optionc");
-                options[3]=questionsJsonObj.getString("optiond");
-                answer = questionsJsonObj.getString("answer");
-                break;
-            }
 
-        } catch (JSONException e) {
-            System.out.println(e.toString());
-        }
-
-*/
     }
 
     @Override
@@ -217,26 +230,6 @@ public class QuizActivity extends AppCompatActivity {
                                 changeQuestion(questions.get(0));
                                 questionIndex++;
                             }
-
-
-                            /*JSONArray data = jsonObject.getJSONArray("data");
-                            int length = data.length();
-                            for(int i=0;i<length;i++)
-                            {
-                                JSONObject category = data.getJSONObject(i);
-                                s.add(category.getString("subcategory_name"));
-                                ids.add(Integer.parseInt(category.getString("id")));
-                            }
-                            int[] idArr = new int[ids.size()];
-                            String[] texts = new String[s.size()];
-                            for(int i=0;i<s.size();i++)
-                            {
-                                texts[i]=s.get(i);
-                                idArr[i]=ids.get(i);
-                            }
-                            SubCategoryActivity.subCategoryIds=idArr;
-                            adapter = new SubCategoryListAdapter(getApplicationContext(),texts,images);
-                            listView.setAdapter(adapter);*/
 
                         }catch (JSONException e)
                         {
@@ -316,4 +309,5 @@ public class QuizActivity extends AppCompatActivity {
         alertDialog.show();
 
     }
+
 }

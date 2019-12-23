@@ -5,11 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/wp3338195"
-
+    android:orientation="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.avijit.jobseeker.StartActivity"
     tools:showIn="@layout/app_bar_start">
 
+    <Button
+        android:id="@+id/signup_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
+        android:textAllCaps="false"
+        android:background="@drawable/border1"
+        android:textSize="24sp"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:text="Sign up"/>
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
+        android:textAllCaps="false"
+        android:background="@drawable/border1"
+        android:textSize="24sp"
+        android:padding="10dp"
+        android:textColor="#FFFFFF"
+        android:text="Log in"/>
     <Button
         android:id="@+id/start_button"
         android:layout_width="wrap_content"

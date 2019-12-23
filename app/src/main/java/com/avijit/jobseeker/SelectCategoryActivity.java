@@ -1,5 +1,6 @@
 package com.avijit.jobseeker;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
@@ -106,6 +107,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
                                 startActivity(intent);
                             }
                         });
+
                       /*  textView.setText("Worked"+response);
                         try {
                             JSONObject jsonObject = new JSONObject(response);

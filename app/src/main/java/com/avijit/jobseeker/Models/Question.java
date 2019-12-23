@@ -68,4 +68,26 @@ public class Question {
     public void setAnswer(String answer) {
         this.answer = answer;
     }
+
+    public int getAnswerIndex(Question question)
+    {
+        int answer=0;
+        if(question.getAnswer().equals("a"))
+        {
+            answer=0;
+        }
+        else if(question.getAnswer().equals("b"))
+        {
+            answer=1;
+        }
+        else if(question.getAnswer().equals("c"))
+        {
+            answer=2;
+        }
+        else if(question.getAnswer().equals("d"))
+        {
+            answer=3;
+        }
+        return answer;
+    }
 }

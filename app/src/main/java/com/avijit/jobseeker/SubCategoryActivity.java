@@ -61,7 +61,7 @@ public class SubCategoryActivity extends AppCompatActivity {
         });
         categoryId = getIntent().getExtras().getInt("position");
         setListView();
-
+        Singleton.getInstance().url="https://bdjobs.com/";
 
 
 
@@ -127,6 +127,7 @@ public class SubCategoryActivity extends AppCompatActivity {
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                     Intent intent = new Intent(getApplicationContext(),QuizActivity.class);
                                     intent.putExtra("subCategoryId",subCategoryIds[position]);
+
                                     startActivity(intent);
                                 }
                             });
