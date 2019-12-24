@@ -85,11 +85,13 @@ public class SubCategoryActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        final String jobUrl="https://www.bdjobs.com";
                         try {
                             setContentView(R.layout.activity_sub_category);
                             listView = findViewById(R.id.sub_category_list_view);
                             List<String> s = new ArrayList<>();
                             List<Integer> ids= new ArrayList<>();
+                            final List<String> urls= new ArrayList<>();
                             JSONObject jsonObject = new JSONObject(response);
                             JSONArray data = jsonObject.getJSONArray("data");
                             int length = data.length();
@@ -97,6 +99,7 @@ public class SubCategoryActivity extends AppCompatActivity {
                             {
                                 JSONObject category = data.getJSONObject(i);
                                 s.add(category.getString("subcategory_name"));
+                                urls.add(category.getString("jobUrl"));
                                 ids.add(Integer.parseInt(category.getString("id")));
                             }
                             int[] idArr = new int[ids.size()];
@@ -125,6 +128,7 @@ public class SubCategoryActivity extends AppCompatActivity {
                                  */
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                    Singleton.getInstance().url=urls.get(position);
                                     Intent intent = new Intent(getApplicationContext(),QuizActivity.class);
                                     intent.putExtra("subCategoryId",subCategoryIds[position]);
 

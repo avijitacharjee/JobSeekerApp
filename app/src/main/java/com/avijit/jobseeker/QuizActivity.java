@@ -307,7 +307,6 @@ public class QuizActivity extends AppCompatActivity {
 
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();
-
     }
 
 }

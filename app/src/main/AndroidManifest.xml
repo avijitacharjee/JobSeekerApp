@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".StartActivity"
+            android:name=".LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -27,7 +27,7 @@
         <activity android:name=".ResultActivity" />
         <activity android:name=".JobsActivity" />
         <activity android:name=".SignUpActivity" />
-        <activity android:name=".LoginActivity"></activity>
+        <activity android:name=".StartActivity"></activity>
     </application>
 
 </manifest>

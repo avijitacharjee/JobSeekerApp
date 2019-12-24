@@ -78,14 +78,31 @@ public class SignUpActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Toast.makeText(SignUpActivity.this,"Your are registered successfully..",Toast.LENGTH_SHORT).show();
-                        mainHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
-                                startActivity(intent);
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String message = jsonObject.getString("message");
+                            //Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            if(message.equals("Successfully logged in"))
+                            {
+                                Toast.makeText(getApplicationContext(),"Couldn't Sign Up. \nEmail Already Exists",Toast.LENGTH_SHORT).show();
+                                //startActivity(new Intent(getApplicationContext(),SelectCategoryActivity.class));
                             }
-                        },1000);
+                            else
+                            {
+                                Toast.makeText(SignUpActivity.this,"Your are registered successfully..",Toast.LENGTH_SHORT).show();
+                                mainHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(getApplicationContext(),LoginActivity.class);
+                                        startActivity(intent);
+                                    }
+                                },500);
+                            }
+                        }catch (Exception e)
+                        {
+                            Toast.makeText(getApplicationContext(), "Json Exception", Toast.LENGTH_SHORT).show();
+                        }
+
                     }
                 }, new Response.ErrorListener() {
             @Override

@@ -27,7 +27,7 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
     private EditText userNameEditText,passwordEditText;
     private Button loginButton,signUpButton;
-    Handler mainHandler = new Handler();
+   // Handler mainHandler = new Handler();
     public boolean isRegistered=false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,10 @@ public class LoginActivity extends AppCompatActivity {
                             {
                                 Toast.makeText(getApplicationContext(),"Logged in",Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(getApplicationContext(),SelectCategoryActivity.class));
+                            }
+                            else
+                            {
+                                Toast.makeText(LoginActivity.this, "Incorrect mail/password", Toast.LENGTH_SHORT).show();
                             }
                         }catch (Exception e)
                         {
