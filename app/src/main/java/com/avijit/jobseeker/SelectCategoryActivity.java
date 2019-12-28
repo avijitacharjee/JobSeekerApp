@@ -139,8 +139,7 @@ public class SelectCategoryActivity extends AppCompatActivity {
 
                             adapter = new CategoryListAdapter(getApplicationContext(),texts,images);
                             listView.setAdapter(adapter);
-                           // hiddenTextView.setText(s.toString());
-                            Toast.makeText(SelectCategoryActivity.this, ""+data, Toast.LENGTH_SHORT).show();
+
                         }catch (JSONException e)
                         {
                             Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();

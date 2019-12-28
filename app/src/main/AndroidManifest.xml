@@ -23,10 +23,10 @@
         </activity>
         <activity android:name=".SelectCategoryActivity" />
         <activity android:name=".SubCategoryActivity" />
-        <activity android:name=".QuizActivity" />
-        <activity android:name=".ResultActivity" />
-        <activity android:name=".JobsActivity" />
-        <activity android:name=".SignUpActivity" />
+        <activity android:name=".QuizActivity"/>
+        <activity android:name=".ResultActivity"/>
+        <activity android:name=".JobsActivity"/>
+        <activity android:name=".SignUpActivity"/>
         <activity android:name=".StartActivity"></activity>
     </application>
 

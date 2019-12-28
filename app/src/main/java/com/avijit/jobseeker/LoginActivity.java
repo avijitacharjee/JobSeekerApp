@@ -121,7 +121,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         };
 
-// Add the request to the RequestQueue.
+        // Add the request to the RequestQueue.
         //getApplicationContext().addToRequestQueue(jsonObjectRequest, "headerRequest");
         queue.add(stringRequest);
 
